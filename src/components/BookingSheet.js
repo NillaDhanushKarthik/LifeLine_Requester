@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { View, Text, StyleSheet, Animated, Easing, Alert } from 'react-native';
+import { View, Text, StyleSheet, Animated, Easing, Alert, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Btn } from './ui';
 import { C, shadow } from '../theme';
@@ -20,7 +20,18 @@ export default function BookingSheet({ booking, driver, hospital, etaMin, distKm
   const isSearching = st === 'Searching' || st === 'SEARCHING' || st === 'Driver Assigned' || st === 'DRIVER_ASSIGNED';
   const isCancelled = st === 'Cancelled' || st === 'CANCELLED';
   const isCompleted = st === 'Completed' || st === 'COMPLETED';
-  const confirmCancel = () => Alert.alert('Cancel ambulance?', 'The ambulance will be released for other emergencies.', [{ text: 'Keep', style: 'cancel' }, { text: 'Cancel request', style: 'destructive', onPress: onCancel }]);
+  const confirmCancel = () => {
+    if (Platform.OS === 'web') {
+      if (typeof window !== 'undefined' && window.confirm('Cancel ambulance? The ambulance will be released for other emergencies.')) {
+        onCancel();
+      }
+    } else {
+      Alert.alert('Cancel ambulance?', 'The ambulance will be released for other emergencies.', [
+        { text: 'Keep', style: 'cancel' },
+        { text: 'Cancel request', style: 'destructive', onPress: onCancel }
+      ]);
+    }
+  };
 
   return (
     <View style={[s.sheet, shadow]}>

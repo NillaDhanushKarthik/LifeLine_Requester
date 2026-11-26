@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, ScrollView, Alert, StyleSheet } from 'react-native';
+import { View, Text, ScrollView, Alert, StyleSheet, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Btn, Field } from '../components/ui';
 import api, { errMsg } from '../api'; import { useAuth } from '../AuthContext'; import { C } from '../theme';
@@ -19,7 +19,15 @@ export default function Profile() {
     }
     setBusy(false);
   };
-  const out = () => Alert.alert('Sign out?', '', [{ text: 'Cancel', style: 'cancel' }, { text: 'Sign out', style: 'destructive', onPress: signOut }]);
+  const out = () => {
+    if (Platform.OS === 'web') {
+      if (typeof window !== 'undefined' && window.confirm('Are you sure you want to sign out?')) {
+        signOut();
+      }
+    } else {
+      Alert.alert('Sign out?', '', [{ text: 'Cancel', style: 'cancel' }, { text: 'Sign out', style: 'destructive', onPress: signOut }]);
+    }
+  };
   return (
     <ScrollView style={{ backgroundColor: '#fff' }} contentContainerStyle={{ padding: 20 }} keyboardShouldPersistTaps="handled">
       <View style={s.head}><View style={s.avatar}><Ionicons name="person" size={34} color={C.blue} /></View>

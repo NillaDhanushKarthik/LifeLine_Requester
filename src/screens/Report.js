@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, ScrollView, StyleSheet, Alert, Pressable, TextInput } from 'react-native';
+import { View, Text, ScrollView, StyleSheet, Alert, Pressable, TextInput, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Btn, Chip, Field } from '../components/ui';
 import api, { errMsg } from '../api'; import { useBooking } from '../BookingContext'; import { C } from '../theme';
@@ -66,5 +66,5 @@ const s = StyleSheet.create({
   stepper: { flexDirection: 'row', alignItems: 'center', marginBottom: 20 },
   stepBtn: { width: 48, height: 48, borderRadius: 16, backgroundColor: C.soft, alignItems: 'center', justifyContent: 'center' },
   stepV: { width: 64, textAlign: 'center', fontSize: 24, fontWeight: '800', color: C.navy },
-  notes: { minHeight: 96, backgroundColor: C.bg, borderRadius: 16, borderWidth: 1, borderColor: C.line, padding: 14, fontSize: 16, color: C.text, textAlignVertical: 'top' },
+  notes: { minHeight: 96, backgroundColor: C.bg, borderRadius: 16, borderWidth: 1, borderColor: C.line, padding: 14, fontSize: 16, color: C.text, textAlignVertical: 'top', ...(Platform.OS === 'web' ? { outlineStyle: 'none', outline: 'none' } : {}) },
 });

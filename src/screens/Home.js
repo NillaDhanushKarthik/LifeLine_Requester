@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { View, Text, StyleSheet, Alert, Linking, Share, Animated, Easing, Pressable, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, Alert, Linking, Share, Animated, Easing, Pressable, ActivityIndicator, Platform } from 'react-native';
 import * as Location from 'expo-location';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -109,7 +109,18 @@ export default function Home({ navigation }) {
     try { await book(me.latitude, me.longitude); } catch (e) { Alert.alert('Could not book', errMsg(e)); }
     setBusy(false);
   };
-  const call108 = () => Alert.alert('Call 108?', 'This will dial the national emergency ambulance number.', [{ text: 'Cancel', style: 'cancel' }, { text: 'Call 108', style: 'destructive', onPress: () => Linking.openURL('tel:108') }]);
+  const call108 = () => {
+    if (Platform.OS === 'web') {
+      if (typeof window !== 'undefined' && window.confirm('Call 108? This will dial the national emergency ambulance number.')) {
+        Linking.openURL('tel:108');
+      }
+    } else {
+      Alert.alert('Call 108?', 'This will dial the national emergency ambulance number.', [
+        { text: 'Cancel', style: 'cancel' },
+        { text: 'Call 108', style: 'destructive', onPress: () => Linking.openURL('tel:108') }
+      ]);
+    }
+  };
   const share = () => Share.share({ message: `I requested an ambulance. Track it live: ${API_URL}/api/track/${booking.shareToken}` });
   const doCancel = async () => { try { await cancel(); } catch (e) { Alert.alert('Cannot cancel', errMsg(e)); } };
 
