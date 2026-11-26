@@ -59,7 +59,17 @@ const s = StyleSheet.create({
   bt: { fontSize: 16, fontWeight: '700', letterSpacing: 0.2 },
   label: { fontSize: 13, fontWeight: '600', color: C.mute, marginBottom: 6 },
   inputWrap: { flexDirection: 'row', alignItems: 'center', backgroundColor: C.bg, borderRadius: 16, borderWidth: 1, borderColor: C.line, paddingHorizontal: 14, height: 54 },
-  input: { flex: 1, fontSize: 16, color: C.text, ...(Platform.OS === 'web' ? { outlineStyle: 'none', outline: 'none' } : {}) },
+  input: {
+    flex: 1,
+    fontSize: 16,
+    color: C.text,
+    ...(Platform.OS === 'web' ? {
+      outlineStyle: 'none',
+      outlineWidth: 0,
+      outlineColor: 'transparent',
+      boxShadow: 'none',
+    } : {}),
+  },
   mast: { alignItems: 'center', paddingTop: 70, paddingBottom: 34 },
   logo: { width: 64, height: 64, borderRadius: 22, backgroundColor: '#fff', alignItems: 'center', justifyContent: 'center' },
   brand: { color: '#fff', fontSize: 30, fontWeight: '800', marginTop: 12 },

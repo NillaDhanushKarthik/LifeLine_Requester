@@ -122,7 +122,15 @@ export default function Home({ navigation }) {
     }
   };
   const share = () => Share.share({ message: `I requested an ambulance. Track it live: ${API_URL}/api/track/${booking.shareToken}` });
-  const doCancel = async () => { try { await cancel(); } catch (e) { Alert.alert('Cannot cancel', errMsg(e)); } };
+  const doCancel = async () => {
+    try {
+      await cancel();
+    } catch (e) {
+      if (Platform.OS !== 'web') {
+        Alert.alert('Cannot cancel', errMsg(e));
+      }
+    }
+  };
 
   // Pulsing BOOK button
   const pulse = useRef(new Animated.Value(0)).current;

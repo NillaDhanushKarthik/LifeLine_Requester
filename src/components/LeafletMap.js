@@ -717,6 +717,24 @@ const LeafletMap = forwardRef(function LeafletMap(
     );
   }
 
+  if (Platform.OS === 'web') {
+    return (
+      <View style={[styles.container, style]}>
+        <iframe
+          ref={iframeRef}
+          srcDoc={htmlContent}
+          style={{
+            width: '100%',
+            height: '100%',
+            border: 'none',
+            backgroundColor: '#eef2f7',
+          }}
+          title="Emergency Map"
+        />
+      </View>
+    );
+  }
+
   return (
     <View style={[styles.container, style]}>
       <WebView

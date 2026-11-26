@@ -1,5 +1,5 @@
-import React from 'react';
-import { ActivityIndicator, View } from 'react-native';
+import React, { useEffect } from 'react';
+import { ActivityIndicator, View, Platform } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -9,6 +9,28 @@ import { BookingProvider } from './src/BookingContext';
 import Login from './src/screens/Login'; import Register from './src/screens/Register'; import Forgot from './src/screens/Forgot';
 import Home from './src/screens/Home'; import Report from './src/screens/Report'; import History from './src/screens/History'; import Profile from './src/screens/Profile';
 import { C } from './src/theme';
+
+if (Platform.OS === 'web' && typeof document !== 'undefined') {
+  const styleId = 'lifeline-web-styles';
+  if (!document.getElementById(styleId)) {
+    const style = document.createElement('style');
+    style.id = styleId;
+    style.textContent = `
+      input, textarea, select, button {
+        outline: none !important;
+        box-shadow: none !important;
+      }
+      input:focus, textarea:focus, select:focus, button:focus {
+        outline: none !important;
+        box-shadow: none !important;
+      }
+      * {
+        -webkit-tap-highlight-color: transparent;
+      }
+    `;
+    document.head.appendChild(style);
+  }
+}
 
 const Stack = createNativeStackNavigator();
 const head = { headerTintColor: C.navy, headerTitleStyle: { fontWeight: '800' }, headerShadowVisible: false };

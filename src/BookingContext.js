@@ -125,9 +125,18 @@ export function BookingProvider({ children }) {
   };
   const cancel = async () => {
     const id = booking?._id || booking?.id;
-    const { data } = await api.post(`/bookings/${id}/cancel`);
-    const b = data?.booking || data;
-    setBooking(b);
+    if (!id) {
+      reset();
+      return;
+    }
+    try {
+      const { data } = await api.post(`/bookings/${id}/cancel`);
+      reset();
+      return data?.booking || data;
+    } catch (err) {
+      reset();
+      throw err;
+    }
   };
 
   return (

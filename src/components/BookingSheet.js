@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { View, Text, StyleSheet, Animated, Easing, Alert, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Btn } from './ui';
@@ -16,19 +16,35 @@ function Radar() {
 }
 
 export default function BookingSheet({ booking, driver, hospital, etaMin, distKm, reported, onCancel, onDismiss, onReport, onShare, onCall }) {
+  const [cancelling, setCancelling] = useState(false);
   const st = booking.status, idx = STEP_OF[st] ?? 0, done = TERMINAL.includes(st);
   const isSearching = st === 'Searching' || st === 'SEARCHING' || st === 'Driver Assigned' || st === 'DRIVER_ASSIGNED';
   const isCancelled = st === 'Cancelled' || st === 'CANCELLED';
   const isCompleted = st === 'Completed' || st === 'COMPLETED';
+
   const confirmCancel = () => {
+    if (cancelling) return;
+    const proceed = async () => {
+      setCancelling(true);
+      try {
+        await onCancel();
+      } catch (e) {
+      } finally {
+        setCancelling(false);
+      }
+    };
+
     if (Platform.OS === 'web') {
-      if (typeof window !== 'undefined' && window.confirm('Cancel ambulance? The ambulance will be released for other emergencies.')) {
-        onCancel();
+      if (typeof window !== 'undefined') {
+        const ok = window.confirm('Cancel ambulance? The ambulance will be released for other emergencies.');
+        if (ok) proceed();
+      } else {
+        proceed();
       }
     } else {
       Alert.alert('Cancel ambulance?', 'The ambulance will be released for other emergencies.', [
         { text: 'Keep', style: 'cancel' },
-        { text: 'Cancel request', style: 'destructive', onPress: onCancel }
+        { text: 'Cancel request', style: 'destructive', onPress: proceed }
       ]);
     }
   };
@@ -76,7 +92,16 @@ export default function BookingSheet({ booking, driver, hospital, etaMin, distKm
         </View>)}
 
       {done ? <Btn title={isCompleted ? 'Done' : 'Close'} onPress={onDismiss} style={{ marginTop: 16 }} />
-        : CANCELLABLE.includes(st) && <Btn title="Cancel request" variant="outline" onPress={confirmCancel} style={{ marginTop: 12, height: 48 }} />}
+        : CANCELLABLE.includes(st) && (
+          <Btn
+            title="Cancel request"
+            variant="outline"
+            onPress={confirmCancel}
+            loading={cancelling}
+            disabled={cancelling}
+            style={{ marginTop: 12, height: 48 }}
+          />
+        )}
     </View>
   );
 }
