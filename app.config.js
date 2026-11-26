@@ -34,11 +34,17 @@ module.exports = {
     },
 
     plugins: [
-  'expo-asset',
-  'expo-font',
-  'expo-status-bar',
-  'expo-secure-store',
-  ['expo-location', { locationWhenInUsePermission: why }]
-]
+      'expo-asset',
+      'expo-font',
+      'expo-status-bar',
+      'expo-secure-store',
+      ['expo-location', { locationWhenInUsePermission: why }]
+    ],
+
+    extra: {
+      eas: {
+        projectId: '5989c070-983e-4fdb-91e3-8969b881ad4a'
+      }
+    }
   }
 };

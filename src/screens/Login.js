@@ -40,7 +40,12 @@ export default function Login() {
       if (data.name) setFullName(data.name);
       setStep(2);
       setTimer(30);
-      setOtp('');
+      if (data.devOtp) {
+        setOtp(data.devOtp);
+        Alert.alert('OTP Received', `Your verification code is: ${data.devOtp}`);
+      } else {
+        setOtp('');
+      }
     } catch (e) {
       Alert.alert('Could not send OTP', errMsg(e));
     } finally {
@@ -198,6 +203,10 @@ export default function Login() {
               </Pressable>
             )}
           </View>
+
+          <Text style={{ textAlign: 'center', color: '#888', fontSize: 12, marginTop: 14 }}>
+            Test code: <Text style={{ fontWeight: '700', color: C.blue }}>123456</Text>
+          </Text>
         </>
       )}
     </AuthLayout>
