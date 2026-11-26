@@ -22,6 +22,7 @@ const LeafletMap = forwardRef(function LeafletMap(
   ref
 ) {
   const webViewRef = useRef(null);
+  const iframeRef = useRef(null);
   const isReadyRef = useRef(false);
   const [isReady, setIsReady] = useState(false);
 
@@ -94,12 +95,35 @@ const LeafletMap = forwardRef(function LeafletMap(
   payloadRef.current = currentPayload;
 
   const sendToMap = useCallback((msgObj) => {
-    if (webViewRef.current) {
+    if (Platform.OS === 'web') {
+      try {
+        iframeRef.current?.contentWindow?.postMessage(JSON.stringify(msgObj), '*');
+      } catch (e) {}
+    } else if (webViewRef.current) {
       try {
         webViewRef.current.postMessage(JSON.stringify(msgObj));
       } catch (e) {}
     }
   }, []);
+
+  useEffect(() => {
+    if (Platform.OS === 'web') {
+      const handleWebMsg = (event) => {
+        try {
+          const data = typeof event.data === 'string' ? JSON.parse(event.data) : event.data;
+          if (data && data.type === 'MAP_READY') {
+            isReadyRef.current = true;
+            setIsReady(true);
+            if (payloadRef.current) {
+              sendToMap({ type: 'UPDATE', payload: payloadRef.current });
+            }
+          }
+        } catch {}
+      };
+      window.addEventListener('message', handleWebMsg);
+      return () => window.removeEventListener('message', handleWebMsg);
+    }
+  }, [sendToMap]);
 
   // Expose recenter or custom methods to parent via ref
   useImperativeHandle(ref, () => ({
@@ -667,16 +691,31 @@ const LeafletMap = forwardRef(function LeafletMap(
     window.addEventListener('message', onMessage);
     document.addEventListener('message', onMessage);
 
-    // Signal ready to React Native
+    // Signal ready to React Native / Web
     setTimeout(function() {
       fixSize();
       if (window.ReactNativeWebView && window.ReactNativeWebView.postMessage) {
         window.ReactNativeWebView.postMessage(JSON.stringify({ type: 'MAP_READY' }));
+      } else if (window.parent && window.parent !== window) {
+        window.parent.postMessage(JSON.stringify({ type: 'MAP_READY' }), '*');
       }
     }, 50);
   </script>
 </body>
 </html>`, []);
+
+  if (Platform.OS === 'web') {
+    return (
+      <View style={[styles.container, style]}>
+        <iframe
+          ref={iframeRef}
+          srcDoc={htmlContent}
+          style={{ width: '100%', height: '100%', border: 'none' }}
+          title="Leaflet Map"
+        />
+      </View>
+    );
+  }
 
   return (
     <View style={[styles.container, style]}>
