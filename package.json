@@ -7,6 +7,7 @@
     "start:tunnel": "expo start --tunnel --port 8081",
     "start:go": "expo start --go --port 8081",
     "web": "expo start --web --port 8081",
+    "build": "expo export --platform web",
     "android": "expo start --android --port 8081",
     "ios": "expo start --ios --port 8081",
     "run:android": "expo run:android",
